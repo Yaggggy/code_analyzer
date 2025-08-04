@@ -16,7 +16,7 @@ function App() {
 
     try {
       const response = await fetch(
-        "https://code-analyzer-backend-1qwz.onrender.com/analyze",
+        `${import.meta.env.VITE_BACKEND_URL}/analyze`,
         {
           method: "POST",
           headers: { "Content-Type": "application/json" },
