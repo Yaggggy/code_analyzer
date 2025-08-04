@@ -15,6 +15,7 @@ function App() {
     setError("");
 
     try {
+      // The API call uses the proxy path for local dev, and the redirect rule for Netlify
       const response = await fetch("/api/analyze", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
