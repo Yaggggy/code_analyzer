@@ -1,0 +1,16 @@
+[build]
+  command = "npm run build"
+  publish = "frontend/dist"
+  functions = "functions"
+
+[dev]
+  framework = "create-react-app"
+  command = "npm run dev"
+  targetPort = 5173
+  publish = "frontend/dist"
+  functions = "functions"
+
+[[redirects]]
+  from = "/*"
+  to = "/index.html"
+  status = 200
