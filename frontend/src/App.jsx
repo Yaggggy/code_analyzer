@@ -15,12 +15,14 @@ function App() {
     setError("");
 
     try {
-      // The API call uses the proxy path for local dev, and the redirect rule for Netlify
-      const response = await fetch("/api/analyze", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ code }),
-      });
+      const response = await fetch(
+        "https://code-analyzer-backend-1qwz.onrender.com/analyze",
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ code }),
+        }
+      );
 
       if (!response.ok) {
         throw new Error("Failed to analyze code");
@@ -42,9 +44,7 @@ function App() {
       if (navigator.clipboard && navigator.clipboard.writeText) {
         navigator.clipboard
           .writeText(textToCopy)
-          .then(() => {
-            alert("Analysis copied to clipboard!");
-          })
+          .then(() => alert("Analysis copied to clipboard!"))
           .catch((err) => {
             console.error("Failed to copy text: ", err);
             alert("Failed to copy text. Please try again.");

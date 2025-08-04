@@ -1,19 +1,4 @@
-# Node.js dependencies
 node_modules/
-package-lock.json
-
-# Python virtual environment
-venv/
-__pycache__/
-
-# Environment variables
+dist/
+build/
 .env
-
-# Frontend build output
-/frontend/dist/
-
-# VS Code directory
-.vscode/
-
-# Other temporary files
-*.log
