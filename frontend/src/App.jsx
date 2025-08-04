@@ -1,16 +1,5 @@
 import { useState, useRef } from "react";
 import { Loader2, Copy } from "lucide-react";
-import {
-  Card,
-  CardHeader,
-  CardTitle,
-  CardDescription,
-  CardContent,
-  CardFooter,
-} from "./components/ui/card";
-import { Button } from "./components/ui/button";
-import { Textarea } from "./components/ui/textarea";
-import { Separator } from "./components/ui/separator";
 
 function App() {
   const [code, setCode] = useState("");
@@ -26,7 +15,8 @@ function App() {
     setError("");
 
     try {
-      const response = await fetch("/.netlify/functions/analyze", {
+      // The fetch call now uses the proxy prefix '/api'
+      const response = await fetch("/api/analyze", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ code }),
@@ -49,117 +39,109 @@ function App() {
   const copyToClipboard = () => {
     if (analysisRef.current) {
       const textToCopy = analysisRef.current.innerText;
-      navigator.clipboard
-        .writeText(textToCopy)
-        .then(() => {
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard
+          .writeText(textToCopy)
+          .then(() => {
+            alert("Analysis copied to clipboard!");
+          })
+          .catch((err) => {
+            console.error("Failed to copy text: ", err);
+            alert("Failed to copy text. Please try again.");
+          });
+      } else {
+        // Fallback for older browsers
+        const textarea = document.createElement("textarea");
+        textarea.value = textToCopy;
+        document.body.appendChild(textarea);
+        textarea.select();
+        try {
+          document.execCommand("copy");
           alert("Analysis copied to clipboard!");
-        })
-        .catch((err) => {
-          console.error("Failed to copy text: ", err);
-        });
+        } catch (err) {
+          console.error("Fallback: Oops, unable to copy", err);
+          alert("Failed to copy text. Please try again.");
+        }
+        document.body.removeChild(textarea);
+      }
     }
   };
 
   return (
-    <div className="min-h-screen bg-gray-950 text-gray-100 p-8 flex items-center justify-center font-sans">
-      <div className="w-full max-w-4xl">
-        <h1 className="text-4xl md:text-5xl font-extrabold text-center mb-8 bg-clip-text text-transparent bg-gradient-to-r from-teal-400 to-sky-500 animate-pulse">
-          Code Analyzer
-        </h1>
+    <div className="main-container">
+      <h1 className="app-title">Code Analyzer</h1>
 
-        <Card className="bg-gray-800 text-gray-100 border-gray-700 shadow-2xl">
-          <CardHeader>
-            <CardTitle className="text-xl font-bold">Input Your Code</CardTitle>
-            <CardDescription className="text-gray-400">
-              Paste your Python, JavaScript, or any other language code below to
-              get a detailed complexity analysis.
-            </CardDescription>
-          </CardHeader>
-          <CardContent>
-            <Textarea
-              className="w-full h-72 bg-gray-900 border-gray-600 text-white focus:ring-teal-500 focus:border-teal-500"
-              placeholder="Paste your code here..."
-              value={code}
-              onChange={(e) => setCode(e.target.value)}
-            />
-          </CardContent>
-          <CardFooter className="flex justify-end">
-            <Button
-              onClick={handleAnalyze}
-              disabled={loading || !code}
-              className="bg-gradient-to-r from-teal-500 to-sky-600 text-white font-bold py-2 px-6 rounded-full shadow-lg hover:from-teal-600 hover:to-sky-700 transition-all duration-300 transform hover:scale-105"
-            >
-              {loading ? (
-                <>
-                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                  Analyzing...
-                </>
-              ) : (
-                "Analyze Code"
-              )}
-            </Button>
-          </CardFooter>
-        </Card>
-
-        {error && (
-          <div className="mt-8 p-4 bg-red-900 text-red-300 border border-red-700 rounded-lg shadow-md animate-fade-in-up">
-            <p className="text-lg font-semibold">{error}</p>
-          </div>
-        )}
-
-        {analysis && (
-          <Card className="mt-8 bg-gray-800 text-gray-100 border-gray-700 shadow-2xl animate-fade-in-up">
-            <CardHeader className="flex flex-row items-center justify-between">
-              <div>
-                <CardTitle className="text-xl font-bold text-teal-400">
-                  Analysis Results
-                </CardTitle>
-                <CardDescription className="text-gray-400">
-                  Detailed breakdown of the code's complexity.
-                </CardDescription>
-              </div>
-              <Button
-                variant="ghost"
-                size="icon"
-                onClick={copyToClipboard}
-                className="text-gray-400 hover:text-teal-400"
-              >
-                <Copy className="h-5 w-5" />
-              </Button>
-            </CardHeader>
-            <CardContent ref={analysisRef}>
-              <div className="space-y-4">
-                <div className="p-4 bg-gray-900 rounded-lg">
-                  <h3 className="text-lg font-semibold text-sky-400">
-                    Time Complexity
-                  </h3>
-                  <p className="mt-1 text-gray-300">
-                    {analysis.time_complexity}
-                  </p>
-                </div>
-                <Separator className="bg-gray-700" />
-                <div className="p-4 bg-gray-900 rounded-lg">
-                  <h3 className="text-lg font-semibold text-sky-400">
-                    Space Complexity
-                  </h3>
-                  <p className="mt-1 text-gray-300">
-                    {analysis.space_complexity}
-                  </p>
-                </div>
-                <Separator className="bg-gray-700" />
-                <div className="p-4 bg-gray-900 rounded-lg">
-                  <h3 className="text-lg font-semibold text-sky-400">
-                    Explanation
-                  </h3>
-                  <p className="mt-1 text-gray-300 whitespace-pre-wrap">
-                    {analysis.explanation}
-                  </p>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-        )}
+      <div className="card">
+        <div className="card-header">
+          <h3 className="card-title">Input Your Code</h3>
+          <p className="card-description">
+            Paste your Python, JavaScript, or any other language code below to
+            get a detailed complexity analysis.
+          </p>
+        </div>
+        <div className="card-content">
+          <textarea
+            className="textarea-field"
+            placeholder="Paste your code here..."
+            value={code}
+            onChange={(e) => setCode(e.target.value)}
+          />
+        </div>
+        <div className="card-footer">
+          <button
+            onClick={handleAnalyze}
+            disabled={loading || !code}
+            className="action-button"
+          >
+            {loading ? (
+              <>
+                <Loader2 className="loading-icon" size={20} />
+                Analyzing...
+              </>
+            ) : (
+              "Analyze Code"
+            )}
+          </button>
+        </div>
       </div>
+
+      {error && (
+        <div className="error-message">
+          <p>{error}</p>
+        </div>
+      )}
+
+      {analysis && (
+        <div className="card analysis-results">
+          <div className="header-with-button">
+            <div>
+              <h3 className="card-title">Analysis Results</h3>
+              <p className="card-description">
+                Detailed breakdown of the code's complexity.
+              </p>
+            </div>
+            <button className="copy-button" onClick={copyToClipboard}>
+              <Copy className="copy-icon" />
+            </button>
+          </div>
+          <div className="card-content" ref={analysisRef}>
+            <div className="analysis-section">
+              <h4 className="analysis-title">Time Complexity</h4>
+              <p className="analysis-text">{analysis.time_complexity}</p>
+            </div>
+            <div className="separator"></div>
+            <div className="analysis-section">
+              <h4 className="analysis-title">Space Complexity</h4>
+              <p className="analysis-text">{analysis.space_complexity}</p>
+            </div>
+            <div className="separator"></div>
+            <div className="analysis-section">
+              <h4 className="analysis-title">Explanation</h4>
+              <p className="analysis-text">{analysis.explanation}</p>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
