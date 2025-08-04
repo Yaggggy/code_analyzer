@@ -1,11 +1,19 @@
 [build]
+  # Tell Netlify that the main project is in the 'frontend' directory.
+  # All commands and paths below are now relative to this directory.
   base = "frontend"
+  
+  # Now, the build command runs 'npm run build' inside the 'frontend' directory.
   command = "npm run build"
+  
+  # The publish directory is 'dist', which is inside the 'frontend' directory.
   publish = "dist"
+  
+  # The functions folder is one level up from the 'frontend' base.
   functions = "../functions"
 
 [dev]
-  
+  # For local development, this also sets the base directory.
   base = "frontend"
   command = "npm run dev"
   publish = "dist"
