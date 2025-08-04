@@ -1,4 +1,5 @@
 fastapi
-mangum
-google-generativeai
 uvicorn
+google-generativeai
+python-dotenv
+mangum

@@ -12,7 +12,6 @@
   framework = "create-react-app"
   targetPort = 5173
 
-# This is the crucial new section.
 [[redirects]]
   from = "/api/*"
   to = "/.netlify/functions/:splat"

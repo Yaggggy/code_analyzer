@@ -6,18 +6,19 @@ from fastapi.middleware.cors import CORSMiddleware
 from mangum import Mangum
 from google.generativeai import configure, GenerativeModel
 import logging
-
-
+import uvicorn
+from dotenv import load_dotenv
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
+# Load environment variables from the .env file at the root of the project for local dev
+load_dotenv(dotenv_path='../.env')
 
 GEMINI_API_KEY = os.getenv("GEMINI_API_KEY")
 
 if not GEMINI_API_KEY:
     logger.error("GEMINI_API_KEY environment variable not set.")
-
     raise ValueError("GEMINI_API_KEY environment variable not set")
 
 configure(api_key=GEMINI_API_KEY)
@@ -25,7 +26,6 @@ model = GenerativeModel("gemini-2.5-flash-preview-05-20")
 
 app = FastAPI()
 
-# In a deployed environment, we can allow all origins or specify the deployed URL
 origins = ["*"]
 
 app.add_middleware(
@@ -53,7 +53,7 @@ def extract_json_from_markdown(text):
         logger.error(f"Failed to extract JSON from Markdown: {e}")
         return text
 
-@app.post("/.netlify/functions/analyze")
+@app.post("/analyze")
 async def analyze_code(request: Request):
     logger.info("Function 'analyze_code' received a request.")
     try:
@@ -97,3 +97,6 @@ async def analyze_code(request: Request):
         return JSONResponse(content={"error": str(e)}, status_code=500)
 
 handler = Mangum(app)
+
+if __name__ == "__main__":
+    uvicorn.run("analyze:app", host="0.0.0.0", port=8000, reload=True)

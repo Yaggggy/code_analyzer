@@ -15,7 +15,7 @@ function App() {
     setError("");
 
     try {
-      // The fetch call now uses the proxy prefix '/api'
+      // The API call uses the proxy path for local dev, and the redirect rule for Netlify
       const response = await fetch("/api/analyze", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -50,7 +50,6 @@ function App() {
             alert("Failed to copy text. Please try again.");
           });
       } else {
-        // Fallback for older browsers
         const textarea = document.createElement("textarea");
         textarea.value = textToCopy;
         document.body.appendChild(textarea);
