@@ -3,21 +3,21 @@ import json
 from fastapi import FastAPI, Request
 from fastapi.responses import JSONResponse
 from fastapi.middleware.cors import CORSMiddleware
+from mangum import Mangum
 from google.generativeai import configure, GenerativeModel
 import logging
-import uvicorn
-from dotenv import load_dotenv
+
+
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
-# Load environment variables from the .env file at the root of the project
-load_dotenv(dotenv_path='../.env')
 
 GEMINI_API_KEY = os.getenv("GEMINI_API_KEY")
 
 if not GEMINI_API_KEY:
     logger.error("GEMINI_API_KEY environment variable not set.")
+
     raise ValueError("GEMINI_API_KEY environment variable not set")
 
 configure(api_key=GEMINI_API_KEY)
@@ -25,11 +25,8 @@ model = GenerativeModel("gemini-2.5-flash-preview-05-20")
 
 app = FastAPI()
 
-# Specify the allowed origin for your React dev server
-origins = [
-    "http://localhost:5173",
-    "[http://127.0.0.1:5173](http://127.0.0.1:5173)",
-]
+# In a deployed environment, we can allow all origins or specify the deployed URL
+origins = ["*"]
 
 app.add_middleware(
     CORSMiddleware,
@@ -44,12 +41,10 @@ def extract_json_from_markdown(text):
     try:
         start_index = text.find('```json')
         if start_index == -1:
-            # If no json block is found, assume the entire text is the JSON
             return text
         
         end_index = text.find('```', start_index + 1)
         if end_index == -1:
-            # If the block is not closed, assume it's to the end of the text
             end_index = len(text)
         
         json_content = text[start_index + 7:end_index].strip()
@@ -58,7 +53,7 @@ def extract_json_from_markdown(text):
         logger.error(f"Failed to extract JSON from Markdown: {e}")
         return text
 
-@app.post("/analyze")
+@app.post("/.netlify/functions/analyze")
 async def analyze_code(request: Request):
     logger.info("Function 'analyze_code' received a request.")
     try:
@@ -89,10 +84,7 @@ async def analyze_code(request: Request):
         
         logger.info(f"Received raw response from Gemini: {response_text[:100]}...")
 
-        # Extract the JSON content from the Markdown wrapper
         json_content = extract_json_from_markdown(response_text)
-
-        # Attempt to parse the cleaned JSON
         analysis_result = json.loads(json_content)
         
         return JSONResponse(content=analysis_result)
@@ -104,5 +96,4 @@ async def analyze_code(request: Request):
         logger.exception("An unexpected error occurred during code analysis.")
         return JSONResponse(content={"error": str(e)}, status_code=500)
 
-if __name__ == "__main__":
-    uvicorn.run("analyze:app", host="0.0.0.0", port=8000, reload=True)
+handler = Mangum(app)
