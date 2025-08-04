@@ -53,7 +53,7 @@ This project is split into two independently deployed parts:
 ## 👨‍💻 Author
 
 **Yagyansh Singh Deshwal**  
-[LinkedIn](www.linkedin.com/in/yagyansh-singh-deshwal)
+
 
 ---
 
