@@ -15,9 +15,7 @@ function App() {
     setError("");
 
     try {
-      // Direct call to the Netlify Functions path.
-      // This will work in both local 'netlify dev' and production environments.
-      const response = await fetch("/.netlify/functions/analyze", {
+      const response = await fetch("/api/analyze", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ code }),
