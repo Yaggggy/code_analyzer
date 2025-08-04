@@ -1,12 +1,19 @@
-
+# Node.js dependencies
 node_modules/
 package-lock.json
+
+# Python virtual environment
 venv/
 __pycache__/
-.env
-/frontend/dist/
-.vscode/
-*.log
 
-# Local Netlify folder
-.netlify
+# Environment variables
+.env
+
+# Frontend build output
+/frontend/dist/
+
+# VS Code directory
+.vscode/
+
+# Other temporary files
+*.log
