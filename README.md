@@ -53,7 +53,7 @@ This project is split into two independently deployed parts:
 ## 👨‍💻 Author
 
 **Yagyansh Singh Deshwal**  
-[GitHub]([https://github.com/Yaggggy](https://github.com/Yaggggy)) • [LinkedIn](www.linkedin.com/in/yagyansh-singh-deshwal)
+[LinkedIn](www.linkedin.com/in/yagyansh-singh-deshwal)
 
 ---
 
