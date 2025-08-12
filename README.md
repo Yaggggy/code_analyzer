@@ -44,7 +44,7 @@ This project is split into two independently deployed parts:
 | Layer     | Technologies                       |
 |-----------|------------------------------------|
 | Frontend  | React, Vite, Tailwind CSS          |
-| Backend   | Python, FastAPI, OpenAI API        |
+| Backend   | Python, FastAPI, Gemini API        |
 | Hosting   | Netlify (frontend), Render (API)   |
 
 ---
